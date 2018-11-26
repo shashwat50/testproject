@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/whitelist_control'
+
+options = {
+    :sites => []
+}
+
+subtext = <<HELP
+Commands:
+  addset:      add a set of whitelist entries
+  deleteall:   delete all whitelists
+  list:        list existing whitelist entries
+
+See '$0 COMMAND --help' for more information on a specific command.
+HELP
+
+global_parser = OptionParser.new do |opts|
+  opts.banner = "usage: #{$0} [options] [subcommand [options]]"
+
+  opts.separator ""
+  opts.separator subtext
+end
+
+def common_opts(parser, options)
+  parser.on("-v", "--verbose", "Enable verbose output") do
+    options[:verbose] = true
+  end
+
+  parser.on("-s site", "--site site", Array, "sites against which to apply the specified operation") do |sites|
+    options[:sites] = sites
+  end
+end
+
+subcommands = {
+    "addset" => OptionParser.new do |parser|
+      parser.banner = "usage: #{$0} addset [options]"
+      common_opts parser, options
+
+      parser.on("-g size", "--group-size size", Integer, "group IPs into rule sets of the given size") do |gs|
+        options[:group_size] = gs
+      end
+    end,
+    "deleteall" => OptionParser.new do |parser|
+      parser.banner = "usage: #{$0} deleteall [options]"
+      common_opts parser, options
+    end,
+    "list" => OptionParser.new do |parser|
+      parser.banner = "usage: #{$0} list [options]"
+      common_opts parser, options
+
+      parser.on("-r", "--resolve-redundancies", "remove IPs that match CIDRs") do
+        options[:resolve_redundancies] = true
+      end
+
+      parser.on("-p", "--print-redundancies", "print IPs that match CIDRs") do
+        options[:print_redundancies] = true
+      end
+    end
+}
+
+global_parser.order!
+command = ARGV.shift
+
+# TODO: print usage properly
+if command.nil?
+  STDERR.puts "Must supply a command"
+  exit
+end
+if !subcommands.key?(command)
+  STDERR.puts "Unknown command: #{command}"
+  exit
+end
+
+subcommands[command].order!
+subcommands[command].parse!
+
+raise OptionParser::MissingArgument if options[:sites].empty?
+
+wctl = WhitelistControl.new(options)
+wctl.send "command_#{command}", options

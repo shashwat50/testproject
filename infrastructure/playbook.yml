@@ -1,0 +1,12 @@
+---
+- hosts: jenkins
+  vars:
+    jenkins_hostname: 18.233.50.107
+    jenkins_package_state: present
+  roles:
+  - role: geerlingguy.java
+    become: true
+    java_packages:
+    - java-1.8.0-openjdk
+  - role: geerlingguy.jenkins
+    become: true

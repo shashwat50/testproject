@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'ipaddr'
+
+def ip_matches?(ip, cidrs)
+  return true if cidrs.include? ip
+
+  cidrs.each do |cidr|
+    begin
+      addr = IPAddr.new cidr
+    rescue IPAddr::InvalidAddressError => e
+      STDERR.puts "Failed to parse '#{cidr}'"
+      raise e
+    end
+
+    begin
+      return true if addr.include? ip
+    rescue IPAddr::InvalidAddressError => e
+      STDERR.puts "Failed to parse '#{ip}'"
+      raise e
+    end
+  end
+  false
+end
+
+def read_input_ips
+  ips = STDIN.read
+  ips.lines.map { |l| l.strip }
+end
+
+test_addr = ARGV[0]
+if test_addr.nil?
+  STDERR.puts "usage: test-addr <address> < ips_and_cidrs.txt"
+  exit(2)
+end
+
+if !ip_matches? test_addr, read_input_ips
+  STDERR.puts "Address #{test_addr} not found"
+  exit(1)
+end
+
+puts "Address #{test_addr} found"
