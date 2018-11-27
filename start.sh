@@ -1,27 +1,36 @@
-echo "Getting List of Whitelisted IP Addresses......"
-
 > cidr.txt
 for i in `cat data/test_sites.txt`
 do
-echo "Getting whitelisted IP's for $i"
-scripts/list_whitelisted_ips.sh $i >> cidr.txt
-done
+echo ""
+echo "-------------------------------------------------------------------------------"
+echo ""
+echo "Getting whitelisted IP's for $i......."
+scripts/list_whitelisted_ips.sh $i > cidr.txt
 
 cat cidr.txt | sort -n | uniq | grep -v '-'  > new_cidr.txt
 echo ""
-echo ""
 > Final_IP.txt
+> IP_CIDR.txt
+> Final_IP_CIDR.txt
 
-echo "Checking if IP's already present........."
+echo "Checking if IP's already present in $i."
 
 python2 comp.py 
 
-SITES=$(cat ./data/test_sites.txt | tr '\n' ',')
+SITES=$i
 
-if [ `cat Final_IP.txt | wc -l` -eq 0 ]
+if [ `cat IP_CIDR.txt | wc -w` -gt 0 ]
 then
-echo "No IP to be added."
-else
-bin/wctl addset -s $SITES < Final_IP.txt
-echo "IP's added successfully!"
+cat IP_CIDR.txt | cut -d '[' -f2 | cut -d ']' -f1 | tr ',' '\n' | cut -d "'" -f2 > Final_IP_CIDR.txt
 fi
+
+if [ `cat Final_IP_CIDR.txt | wc -w` -eq 0 ]
+then
+echo ""
+echo "No IP's to be added in $i."
+else
+bin/wctl addset -s $SITES < Final_IP_CIDR.txt
+echo ""
+echo "IP's added successfully in $i!"
+fi
+done
