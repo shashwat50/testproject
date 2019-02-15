@@ -15,7 +15,7 @@ echo ""
 
 echo "Checking if IP's already present in $i."
 
-python2.7 comp.py 
+py comp.py 
 
 SITES=$i
 
