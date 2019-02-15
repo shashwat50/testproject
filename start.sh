@@ -14,7 +14,7 @@ echo ""
 > Final_IP_CIDR.txt
 
 echo "Checking if IP's already present in $i."
-python comp.py 
+/usr/local/bin/python2.7 comp.py 
 
 SITES=$i
 
