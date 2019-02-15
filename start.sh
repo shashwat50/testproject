@@ -28,7 +28,7 @@ then
 echo ""
 echo "No IP's to be added in $i."
 else
-#bin/wctl addset -s $SITES < Final_IP_CIDR.txt
+bin/wctl addset -s $SITES < Final_IP_CIDR.txt
 echo ""
 echo "IP's added successfully in $i!"
 k=`cat Final_IP_CIDR.txt | tr '\n' ',' | sed 's/,$//'`
