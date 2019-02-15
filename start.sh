@@ -15,7 +15,7 @@ echo ""
 
 echo "Checking if IP's already present in $i."
 
-python --version
+alias python='/usr/local/bin/python2.7'
 python comp.py 
 
 SITES=$i
