@@ -1,5 +1,5 @@
 > cidr.txt
-for i in `cat data/test_sites.txt`
+for i in `cat data/sites.txt`
 do
 echo ""
 echo "-------------------------------------------------------------------------------"
@@ -29,12 +29,12 @@ then
 echo ""
 echo "No IP's to be added in $i."
 else
-#bin/wctl addset -s $SITES < Final_IP_CIDR.txt
+bin/wctl addset -s $SITES < Final_IP_CIDR.txt
 echo ""
 echo "IP's added successfully in $i!"
 k=`cat Final_IP_CIDR.txt | tr '\n' ',' | sed 's/,$//'`
 d=`date -u | awk '{print $3 "-" $2 "-" $6}'`
 t=`date -u | awk '{print $4 "-" $5}'`
-python2 quickstart.py $SITES $k $d $t
+#python2 quickstart.py $SITES $k $d $t
 fi
 done
